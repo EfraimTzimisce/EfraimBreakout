@@ -1,0 +1,207 @@
+import turtle
+
+import time
+
+import random
+
+
+
+# Set up the screen
+
+screen = turtle.Screen()
+
+screen.title("Breakout")
+
+screen.bgcolor("light green")
+
+screen.setup(width=500, height=500)
+
+screen.tracer(0)
+
+
+
+# Create the paddle
+
+paddle = turtle.Turtle()
+
+paddle.speed(0)
+
+paddle.shape("square")
+
+paddle.color("red")
+
+paddle.shapesize(stretch_wid=1, stretch_len=5)
+
+paddle.penup()
+
+paddle.goto(0, -250)
+
+
+
+# Create the ball
+
+ball = turtle.Turtle()
+
+ball.speed(0)
+
+ball.shape("circle")
+
+ball.color("yellow")
+
+ball.penup()
+
+ball.goto(0, 0)
+
+ball.dx = 2
+
+ball.dy = -2
+
+
+
+# Create the bricks
+
+bricks = []
+
+
+
+def create_bricks():
+
+    colors = ["red", "orange", "yellow", "green", "blue"]
+
+    for i in range(-200, 200, 40):
+
+        for j in range(100, 260, 20):
+
+            brick = turtle.Turtle()
+
+            brick.speed(0)
+
+            brick.shape("square")
+
+            brick.color(random.choice(colors))
+
+            brick.shapesize(stretch_wid=1, stretch_len=2)
+
+            brick.penup()
+
+            brick.goto(i, j)
+
+            bricks.append(brick)
+
+
+
+create_bricks()
+
+
+
+# Move the paddle left
+
+def paddle_left():
+
+    x = paddle.xcor()
+
+    if x > -240:
+
+        x -= 20
+
+    paddle.setx(x)
+
+
+
+# Move the paddle right
+
+def paddle_right():
+
+    x = paddle.xcor()
+
+    if x < 240:
+
+        x += 20
+
+    paddle.setx(x)
+
+
+
+# Keyboard bindings
+
+screen.listen()
+
+screen.onkeypress(paddle_left, "Left")
+
+screen.onkeypress(paddle_right, "Right")
+
+
+
+# Main game loop
+
+while True:
+
+    screen.update()
+
+
+
+    # Move the ball
+
+    ball.setx(ball.xcor() + ball.dx)
+
+    ball.sety(ball.ycor() + ball.dy)
+
+
+
+    # Check for collision with the walls
+
+    if ball.xcor() > 290 or ball.xcor() < -290:
+
+        ball.dx *= -1
+
+
+
+    if ball.ycor() > 290:
+
+        ball.dy *= -1
+
+
+
+    # Check for collision with the paddle
+
+    if (ball.ycor() < -240 and ball.ycor() > -250) and (ball.xcor() > paddle.xcor() - 50 and ball.xcor() < paddle.xcor() + 50):
+
+        ball.dy *= -1
+
+
+
+    # Check for collision with the bricks
+
+    for brick in bricks:
+
+        if (ball.ycor() < brick.ycor() + 10 and ball.ycor() > brick.ycor() - 10) and (ball.xcor() > brick.xcor() - 20 and ball.xcor() < brick.xcor() + 20):
+
+            brick.hideturtle()
+
+            bricks.remove(brick)
+
+            ball.dy *= -1
+
+
+
+    # Check for game over
+
+    if ball.ycor() < -290:
+
+        ball.hideturtle()
+
+        paddle.hideturtle()
+
+        for brick in bricks:
+
+            brick.hideturtle()
+
+        break
+
+
+
+    time.sleep(0.01)
+
+
+
+screen.mainloop()
